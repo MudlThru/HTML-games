@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Games Arcade</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --tag-bg: rgba(56, 189, 248, 0.12);
+      --tag-text: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(to right, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* Controls Section */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .search-input {
+      width: 100%;
+      max-width: 480px;
+      padding: 0.75rem 1.25rem;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    .tags-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .filter-btn {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    /* Game Cards Grid */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .game-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      border-color: #475569;
+      box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .game-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .game-desc {
+      color: var(--text-muted);
+      font-size: 0.925rem;
+      margin-bottom: 1.25rem;
+      flex-grow: 1;
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .tag {
+      background-color: var(--tag-bg);
+      color: var(--tag-text);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .play-btn {
+      display: inline-block;
+      text-align: center;
+      background-color: var(--accent);
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .play-btn:hover {
+      background-color: var(--accent-hover);
+      color: #ffffff;
+    }
+
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>HTML Arcade</h1>
+      <p class="subtitle">A collection of standalone browser games</p>
+    </header>
+
+    <div class="controls">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search games...">
+      <div class="tags-filter" id="tagsFilter">
+        <button class="filter-btn active" data-category="all">All</button>
+        <button class="filter-btn" data-category="arcade">Arcade</button>
+        <button class="filter-btn" data-category="incremental">Incremental</button>
+        <button class="filter-btn" data-category="sports">Sports</button>
+        <button class="filter-btn" data-category="action">Action</button>
+      </div>
+    </div>
+
+    <main class="game-grid" id="gameGrid">
+
+      <!-- Game Card 1 -->
+      <article class="game-card" data-title="Breakout Deluxe" data-category="arcade">
+        <div>
+          <h2 class="game-title">Breakout Deluxe</h2>
+          <p class="game-desc">A retro brick-breaker featuring power-ups, smooth paddle physics, and multiple ball modes.</p>
+          <div class="tags-container">
+            <span class="tag">Arcade</span>
+            <span class="tag">Canvas</span>
+          </div>
+        </div>
+        <a href="breakout.html" class="play-btn">Play Game</a>
+      </article>
+
+      <!-- Game Card 2 -->
+      <article class="game-card" data-title="Chrono Builder" data-category="incremental">
+        <div>
+          <h2 class="game-title">Chrono Builder</h2>
+          <p class="game-desc">An idle generator game focused on resource management and time-bending upgrades.</p>
+          <div class="tags-container">
+            <span class="tag">Incremental</span>
+            <span class="tag">Idle</span>
+          </div>
+        </div>
+        <a href="chrono.html" class="play-btn">Play Game</a>
+      </article>
+
+      <!-- Game Card 3 -->
+      <article class="game-card" data-title="Pixel Soccer 2D" data-category="sports">
+        <div>
+          <h2 class="game-title">Pixel Soccer 2D</h2>
+          <p class="game-desc">Fast-paced 2-player or vs AI arcade soccer simulator with retro physics.</p>
+          <div class="tags-container">
+            <span class="tag">Sports</span>
+            <span class="tag">Arcade</span>
+          </div>
+        </div>
+        <a href="soccer.html" class="play-btn">Play Game</a>
+      </article>
+
+      <!-- Game Card 4 -->
+      <article class="game-card" data-title="Dungeon Runner" data-category="action">
+        <div>
+          <h2 class="game-title">Dungeon Runner</h2>
+          <p class="game-desc">Procedurally generated action survival game featuring Web Audio API sound effects.</p>
+          <div class="tags-container">
+            <span class="tag">Action</span>
+            <span class="tag">Procedural</span>
+          </div>
+        </div>
+        <a href="runner.html" class="play-btn">Play Game</a>
+      </article>
+
+      <!-- Empty State -->
+      <div class="no-results" id="noResults">
+        <p>No games found matching your search criteria.</p>
+      </div>
+
+    </main>
+
+    <footer>
+      <p>&copy; Single File Web Games. Built with standard Vanilla JS & CSS.</p>
+    </footer>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const gameCards = document.querySelectorAll('.game-card');
+    const noResults = document.getElementById('noResults');
+
+    let currentCategory = 'all';
+    let searchQuery = '';
+
+    function filterGames() {
+      let visibleCount = 0;
+
+      gameCards.forEach(card => {
+        const title = card.getAttribute('data-title').toLowerCase();
+        const category = card.getAttribute('data-category').toLowerCase();
+        const desc = card.querySelector('.game-desc').textContent.toLowerCase();
+
+        const matchesCategory = (currentCategory === 'all' || category === currentCategory);
+        const matchesSearch = title.includes(searchQuery) || desc.includes(searchQuery);
+
+        if (matchesCategory && matchesSearch) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase().trim();
+      filterGames();
+    });
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCategory = btn.getAttribute('data-category').toLowerCase();
+        filterGames();
+      });
+    });
+  </script>
+</body>
+</html>
